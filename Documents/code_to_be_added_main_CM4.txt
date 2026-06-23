@@ -1,0 +1,103 @@
+...
+
+/* USER CODE BEGIN Includes */
+
+#include <stdio.h>
+
+/* USER CODE END Includes */
+
+...
+
+/* USER CODE BEGIN PD */
+
+#define RPMSG_SERVICE_NAME              "openamp_demo"
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+
+...
+
+/* USER CODE END PD */
+
+...
+
+/* USER CODE BEGIN PV */
+
+static volatile int message_received;
+volatile char *received_data_str;
+static struct rpmsg_endpoint rp_endpoint;
+
+/* USER CODE END PV */
+
+...
+
+...
+
+/* USER CODE BEGIN PFP */
+
+static int rpmsg_recv_callback(struct rpmsg_endpoint *ept, void *data, size_t len, uint32_t src, void *priv);
+unsigned int receive_message(void);
+
+/* USER CODE END PFP */
+
+...
+
+ /* USER CODE BEGIN 2 */
+
+  int32_t status = 0;
+
+  /* Initialize the mailbox use notify the other core on new message */
+  MAILBOX_Init();
+
+  /* Initialize OpenAmp and libmetal libraries */
+  if (MX_OPENAMP_Init(RPMSG_REMOTE, NULL)!= HAL_OK)
+    Error_Handler();
+
+  /* Create an endpoint for rmpsg communication */
+  status = OPENAMP_create_endpoint(&rp_endpoint, RPMSG_SERVICE_NAME, RPMSG_ADDR_ANY, rpmsg_recv_callback, NULL);
+  if (status < 0)
+  {
+    Error_Handler();
+  }
+
+  /* Receive an string from the master */
+  receive_message();
+
+  printf("String: %s\n\r", received_data_str);
+
+  /* De-initialize OpenAMP */
+  OPENAMP_DeInit();
+
+  /* USER CODE END 2 */
+
+...
+
+/* USER CODE BEGIN 4 */
+
+static int rpmsg_recv_callback(struct rpmsg_endpoint *ept, void *data,
+               size_t len, uint32_t src, void *priv)
+{
+  received_data_str = (char *) data;
+  message_received=1;
+
+  return 0;
+}
+
+unsigned int receive_message(void)
+{
+  while (message_received == 0)
+  {
+    OPENAMP_check_for_message();
+  }
+  message_received = 0;
+
+  return 0;
+}
+
+PUTCHAR_PROTOTYPE
+{
+	HAL_UART_Transmit(&huart3, (uint8_t*)&ch, 1, 0xFFFF);
+	return ch;
+}
+
+/* USER CODE END 4 */
+
+...

@@ -1,0 +1,16 @@
+errno.h:
+------------------
+#ifndef __METAL_ERRNO__H__
+//#error "Include metal/errno.h instead of metal/mdk-arm/errno.h"
+#endif
+
+syscalls.c:
+------------------
+#undef errno
+extern int errno;
+
+sysmem.c:
+------------------
+#include <stddef.h>
+#undef errno
+extern int errno;

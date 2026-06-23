@@ -1,0 +1,37 @@
+# STM32CubeIDE build output
+Debug/
+Release/
+CM7/Debug/
+CM7/Release/
+CM4/Debug/
+CM4/Release/
+
+# CubeIDE project files (machine-specific)
+.cproject
+.project
+.settings/
+.launches/
+*.launch
+
+# Object + dependency files
+*.o
+*.d
+*.su
+*.cyclo
+*.map
+*.elf
+*.hex
+*.bin
+*.lst
+
+# CubeMX backup
+*.bak
+
+# Python cache (dashboard tools)
+__pycache__/
+*.pyc
+tools/dashboard/*.log
+
+# OS
+.DS_Store
+Thumbs.db
